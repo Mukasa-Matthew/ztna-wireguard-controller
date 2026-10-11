@@ -15,35 +15,35 @@ A production-grade, open-source Zero-Trust Network Access (ZTNA) and dynamic Wir
 ```mermaid
 flowchart TD
     subgraph ControlPlaneLayer ["Control Plane (control-plane/)"]
-        API["Express REST API\n(Port 8000)"]
-        IPAM["Dynamic IPAM Service\n(Subnet: 10.42.0.0/16)"]
+        API["Express REST API<br/>(Port 8000)"]
+        IPAM["Dynamic IPAM Service<br/>(Subnet: 10.42.0.0/16)"]
         Topology["Topology & Mesh Engine"]
-        Ledger[("Persistent Peer Ledger\n(JSON Store)")]
+        Ledger[("Persistent Peer Ledger<br/>(JSON Store)")]
     end
 
     subgraph AdminLayer ["Admin Interface (dashboard/)"]
-        WebUI["React + Tailwind Dashboard\n(Port 5173)"]
+        WebUI["React + Tailwind Dashboard<br/>(Port 5173)"]
     end
 
     subgraph MeshNodes ["WireGuard Mesh Nodes (agent/)"]
-        NodeA["Node Alpha\n(10.42.0.2)"]
-        NodeB["Node Beta\n(10.42.0.3)"]
-        GatewayNode["Central Gateway\n(10.42.0.1)"]
+        NodeA["Node Alpha<br/>(10.42.0.2)"]
+        NodeB["Node Beta<br/>(10.42.0.3)"]
+        GatewayNode["Central Gateway<br/>(10.42.0.1)"]
     end
 
-    WebUI <-->|Manage Peers / Telemetry| API
+    WebUI <-->|"Manage Peers & Telemetry"| API
     API <--> IPAM
     API <--> Topology
     API <--> Ledger
 
-    NodeA -->|1. Register & Poll Topology| API
-    NodeB -->|1. Register & Poll Topology| API
-    NodeA -->|2. Heartbeat & Metrics| API
-    NodeB -->|2. Heartbeat & Metrics| API
+    NodeA -->|"1. Register & Poll Topology"| API
+    NodeB -->|"1. Register & Poll Topology"| API
+    NodeA -->|"2. Heartbeat & Metrics"| API
+    NodeB -->|"2. Heartbeat & Metrics"| API
 
-    NodeA <===>|Encrypted WireGuard Mesh (UDP 51820)| NodeB
-    NodeA <===>|Subnet Routing| GatewayNode
-    NodeB <===>|Subnet Routing| GatewayNode
+    NodeA <-->|"Encrypted WireGuard Mesh (UDP 51820)"| NodeB
+    NodeA <-->|"Subnet Routing"| GatewayNode
+    NodeB <-->|"Subnet Routing"| GatewayNode
 ```
 
 ### Core Zero-Trust Pillars
