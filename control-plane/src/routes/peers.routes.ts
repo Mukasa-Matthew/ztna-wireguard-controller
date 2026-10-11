@@ -88,7 +88,7 @@ peersRouter.get('/', async (_req: Request, res: Response) => {
  * Get individual peer by ID.
  */
 peersRouter.get('/:id', async (req: Request, res: Response): Promise<void> => {
-  const peer = await peerStore.getById(req.params.id);
+  const peer = await peerStore.getById(String(req.params.id));
   if (!peer) {
     res.status(404).json({ success: false, error: 'Peer not found' });
     return;
@@ -100,7 +100,7 @@ peersRouter.get('/:id', async (req: Request, res: Response): Promise<void> => {
  * Heartbeat & telemetry reporting from peer node daemon.
  */
 peersRouter.post('/:id/heartbeat', async (req: Request, res: Response): Promise<void> => {
-  const peer = await peerStore.getById(req.params.id);
+  const peer = await peerStore.getById(String(req.params.id));
   if (!peer) {
     res.status(404).json({ success: false, error: 'Peer not found' });
     return;
@@ -127,11 +127,11 @@ peersRouter.post('/:id/heartbeat', async (req: Request, res: Response): Promise<
  * Revoke and remove a peer from the overlay mesh.
  */
 peersRouter.delete('/:id', async (req: Request, res: Response): Promise<void> => {
-  const deleted = await peerStore.delete(req.params.id);
+  const deleted = await peerStore.delete(String(req.params.id));
   if (!deleted) {
     res.status(404).json({ success: false, error: 'Peer not found' });
     return;
   }
-  console.log(`[ZTNA Control Plane] Deleted peer ${req.params.id}`);
+  console.log(`[ZTNA Control Plane] Deleted peer ${String(req.params.id)}`);
   res.status(200).json({ success: true, message: 'Peer revoked and deleted' });
 });

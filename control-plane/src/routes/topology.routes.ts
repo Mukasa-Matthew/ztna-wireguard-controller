@@ -9,7 +9,7 @@ export const topologyRouter = Router();
  * Used by the node agent daemon to sync local WireGuard configuration.
  */
 topologyRouter.get('/:id', async (req: Request, res: Response): Promise<void> => {
-  const peer = await peerStore.getById(req.params.id);
+  const peer = await peerStore.getById(String(req.params.id));
   if (!peer) {
     res.status(404).json({ success: false, error: 'Peer not found' });
     return;
@@ -23,7 +23,7 @@ topologyRouter.get('/:id', async (req: Request, res: Response): Promise<void> =>
  * Download or inspect WireGuard wg0.conf text manifest.
  */
 topologyRouter.get('/:id/config', async (req: Request, res: Response): Promise<void> => {
-  const peer = await peerStore.getById(req.params.id);
+  const peer = await peerStore.getById(String(req.params.id));
   if (!peer) {
     res.status(404).send('# Error: Peer not found\n');
     return;
