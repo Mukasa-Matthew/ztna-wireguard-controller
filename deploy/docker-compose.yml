@@ -1,0 +1,92 @@
+services:
+  # ============================================================================
+  # ZTNA Control Plane (REST API & Topology Engine)
+  # ============================================================================
+  control-plane:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.control-plane
+    container_name: ztna-control-plane
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      NODE_ENV: production
+      PORT: 8000
+      HOST: "0.0.0.0"
+      ADMIN_API_KEY: "ztna-admin-supersecret-key"
+    volumes:
+      - control_plane_data:/app/data
+    networks:
+      - ztna_network
+
+  # ============================================================================
+  # ZTNA Web Dashboard (Admin UI)
+  # ============================================================================
+  dashboard:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.dashboard
+    container_name: ztna-dashboard
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    depends_on:
+      - control-plane
+    networks:
+      - ztna_network
+
+  # ============================================================================
+  # Test Node Alpha (WireGuard Mesh Daemon 1)
+  # ============================================================================
+  node-alpha:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.agent
+    container_name: ztna-node-alpha
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    environment:
+      CONTROL_PLANE_URL: "http://control-plane:8000"
+      NODE_NAME: "test-node-alpha"
+      POLL_INTERVAL: 8
+      DRY_RUN: "true"
+    depends_on:
+      - control-plane
+    networks:
+      - ztna_network
+
+  # ============================================================================
+  # Test Node Beta (WireGuard Mesh Daemon 2)
+  # ============================================================================
+  node-beta:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.agent
+    container_name: ztna-node-beta
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    environment:
+      CONTROL_PLANE_URL: "http://control-plane:8000"
+      NODE_NAME: "test-node-beta"
+      POLL_INTERVAL: 8
+      DRY_RUN: "true"
+    depends_on:
+      - control-plane
+    networks:
+      - ztna_network
+
+# ==============================================================================
+# Persistent Volumes & Networks
+# ==============================================================================
+volumes:
+  control_plane_data:
+    driver: local
+
+networks:
+  ztna_network:
+    driver: bridge

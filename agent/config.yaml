@@ -1,0 +1,19 @@
+# ==============================================================================
+# ZTNA WireGuard Node Daemon Configuration
+# ==============================================================================
+
+control_plane_url: "http://localhost:8000"
+poll_interval: 10
+interface: "wg0"
+node_name: "node-client-01"
+listen_port: 51820
+
+# Optional public endpoint if directly reachable (host:port)
+endpoint: null
+
+# Storage for state and keys
+state_file: "./node_state.json"
+key_dir: "./keys"
+
+# Run in simulated dry-run mode when kernel WireGuard or root permissions are not present
+dry_run: true

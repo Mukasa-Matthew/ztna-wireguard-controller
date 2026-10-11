@@ -1,0 +1,16 @@
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+COPY dashboard/package*.json dashboard/tsconfig*.json dashboard/vite.config.ts dashboard/tailwind.config.js dashboard/postcss.config.js dashboard/index.html ./
+RUN npm install
+
+COPY dashboard/src/ ./src/
+RUN npm run build
+
+FROM node:20-alpine AS runner
+WORKDIR /app
+RUN npm install -g serve
+COPY --from=builder /app/dist ./dist
+
+EXPOSE 5173
+CMD ["serve", "-s", "dist", "-l", "5173"]

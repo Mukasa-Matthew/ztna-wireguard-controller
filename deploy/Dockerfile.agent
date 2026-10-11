@@ -1,0 +1,13 @@
+FROM python:3.11-alpine
+
+# Install wireguard utilities and networking tools
+RUN apk add --no-cache wireguard-tools iproute2 iptables bash
+
+WORKDIR /app
+COPY agent/requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY agent/daemon.py agent/config.yaml ./
+RUN chmod +x daemon.py
+
+ENTRYPOINT ["python3", "daemon.py"]
